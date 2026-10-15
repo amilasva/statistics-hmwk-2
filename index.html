@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From Wallet Seed to Ethereum Address</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <header class="hero">
+    <nav class="navbar container">
+      <a href="#" class="logo">ETHEREUM WALLET</a>
+      <div class="navlinks">
+        <a href="#pipeline">Pipeline</a>
+        <a href="#standards">Standards</a>
+        <a href="#laboratory">Experiments</a>
+        <a href="#history">History</a>
+      </div>
+    </nav>
+
+    <div class="container hero-content">
+      <span class="eyebrow">CRYPTOGRAPHY · STATISTICAL PROPERTIES</span>
+      <h1>From Wallet Seed to<br><em>Ethereum Address</em></h1>
+      <p class="hero-description">
+        Hashing, Key Derivation and Cryptographic Primitives
+      </p>
+      <a class="primary-btn" href="#pipeline">Explore the pipeline →</a>
+      <div class="hero-tags">
+        <span>Key Derivation</span>
+        <span>Elliptic Curves</span>
+        <span>Hashing</span>
+        <span>Statistical Analysis</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section id="pipeline" class="section">
+      <div class="section-heading">
+        <span class="section-number">01 / THE PROCESS</span>
+        <h2>From words to an address</h2>
+        <p>
+          An Ethereum wallet combines several cryptographic
+          techniques. Each stage transforms information for
+          a different purpose.
+        </p>
+      </div>
+
+      <div class="pipeline-grid">
+        <div class="step-card">
+          <span class="step-index">01</span>
+          <span class="step-tag">BIP-39</span>
+          <h3>Mnemonic</h3>
+          <p>Human-readable recovery words generated from entropy.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">02</span>
+          <span class="step-tag">BIP-39</span>
+          <h3>Seed</h3>
+          <p>512-bit seed produced using PBKDF2-HMAC-SHA512.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">03</span>
+          <span class="step-tag">BIP-32 / 44</span>
+          <h3>Private Key</h3>
+          <p>A child key derived from the HD wallet structure.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">04</span>
+          <span class="step-tag">secp256k1</span>
+          <h3>Public Key</h3>
+          <p>Calculated by elliptic-curve multiplication Q = kG.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">05</span>
+          <span class="step-tag">Keccak-256</span>
+          <h3>Address</h3>
+          <p>The final 20 bytes of the public-key hash.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-index">06</span>
+          <span class="step-tag">EIP-55</span>
+          <h3>Checksum</h3>
+          <p>Mixed-case encoding helps detect typing errors.</p>
+        </div>
+      </div>
+
+      <div class="info-strip">
+        <strong>Why not just one algorithm?</strong>
+        <p>
+          Key management, public-key cryptography, hashing and
+          error detection solve different problems. Combining
+          specialized techniques makes the wallet practical.
+        </p>
+      </div>
+    </section>
+
+    <section id="standards" class="section">
+      <div class="section-heading">
+        <span class="section-number">02 / THE TECHNOLOGY</span>
+        <h2>Six pieces of the puzzle</h2>
+        <p>
+          These standards and primitives work together, but
+          they are not interchangeable.
+        </p>
+      </div>
+
+      <div class="standards-grid">
+        <article class="standard-card">
+          <div class="standard-top"><span>01</span><b>RECOVERY</b></div>
+          <h3>BIP-39</h3>
+          <p>
+            Converts random entropy into a mnemonic sentence.
+            The sentence and an optional passphrase are processed
+            with PBKDF2-HMAC-SHA512 to produce a 512-bit seed.
+          </p>
+          <small>128-bit entropy → 12 words (typically)</small>
+        </article>
+        <article class="standard-card">
+          <div class="standard-top"><span>02</span><b>DERIVATION</b></div>
+          <h3>BIP-32</h3>
+          <p>
+            Creates a hierarchical deterministic wallet. A master
+            private key and chain code allow many child keys to
+            be derived reproducibly from one seed.
+          </p>
+          <small>One seed → multiple related keys</small>
+        </article>
+        <article class="standard-card">
+          <div class="standard-top"><span>03</span><b>ORGANIZATION</b></div>
+          <h3>BIP-44</h3>
+          <p>
+            Defines a common five-level derivation path, separating
+            purposes, cryptocurrencies, accounts, change branches
+            and address indexes.
+          </p>
+          <small>m/44'/60'/0'/0/0</small>
+        </article>
+        <article class="standard-card">
+          <div class="standard-top"><span>04</span><b>PUBLIC KEY</b></div>
+          <h3>secp256k1</h3>
+          <p>
+            An elliptic curve used to calculate a public key from
+            a private scalar. It also supports the digital
+            signatures used to authorize transactions.
+          </p>
+          <small>Q = kG</small>
+        </article>
+        <article class="standard-card">
+          <div class="standard-top"><span>05</span><b>HASHING</b></div>
+          <h3>Keccak-256</h3>
+          <p>
+            Produces a 256-bit digest. Ethereum hashes the
+            uncompressed public-key coordinates and takes the
+            last 20 bytes to form an address.
+          </p>
+          <small>256-bit hash → 160-bit address</small>
+        </article>
+        <article class="standard-card">
+          <div class="standard-top"><span>06</span><b>ERROR DETECTION</b></div>
+          <h3>EIP-55</h3>
+          <p>
+            Uses the hash of a lowercase hexadecimal address
+            to determine which alphabetic characters should
+            appear in uppercase.
+          </p>
+          <small>Same address, mixed-case representation</small>
+        </article>
+      </div>
+    </section>
+
+    <section id="laboratory" class="section">
+      <div class="section-heading">
+        <span class="section-number">03 / INTERACTIVE WALLET</span>
+        <h2>Wallet derivation lab</h2>
+        <p>
+          Follow a published test mnemonic through the actual
+          Ethereum key derivation process. Change the address
+          index to explore deterministic wallet behavior.
+        </p>
+      </div>
+
+      <div class="lab-panel">
+        <div class="lab-header">
+          <div>
+            <span class="live-dot"></span>
+            <strong>Test wallet · BIP-44</strong>
+          </div>
+          <span class="lab-label">DEMONSTRATION ONLY</span>
+        </div>
+
+        <label class="field-label">Test mnemonic (12 words)</label>
+        <div class="mnemonic-box" id="mnemonicDisplay">
+          test test test test test test test test test test test junk
+        </div>
+
+        <div class="input-row">
+          <div class="input-field">
+            <label for="addressIndex">Address index</label>
+            <input id="addressIndex" type="number" min="0" max="20" value="0">
+          </div>
+          <div class="path-preview">
+            <span>DERIVATION PATH</span>
+            <code id="pathDisplay">m/44'/60'/0'/0/0</code>
+          </div>
+          <button class="action-btn" id="deriveBtn">Derive Wallet →</button>
+        </div>
+
+        <div class="result-stack">
+          <div class="result-item">
+            <span>PRIVATE KEY · 256 BITS</span>
+            <code id="privateKeyResult">Click Derive Wallet</code>
+          </div>
+          <div class="result-item">
+            <span>PUBLIC KEY · UNCOMPRESSED</span>
+            <code id="publicKeyResult">—</code>
+          </div>
+          <div class="result-item">
+            <span>ETHEREUM ADDRESS · EIP-55</span>
+            <code id="addressResult">—</code>
+          </div>
+        </div>
+        <p class="lab-note">
+          This is a public test mnemonic, not a secure wallet.
+          Never enter a real recovery phrase into a homework website.
+        </p>
+        <p class="status-message" id="walletStatus"></p>
+      </div>
+    </section>
+
+    <section id="hash-lab" class="section">
+      <div class="section-heading">
+        <span class="section-number">04 / HASH LABORATORY</span>
+        <h2>A small change. A different hash.</h2>
+        <p>
+          A cryptographic hash function should react strongly
+          even when its input changes by a single bit.
+        </p>
+      </div>
+
+      <div class="experiment-grid">
+        <div class="experiment-card">
+          <h3>Compare two messages</h3>
+          <label class="field-label" for="messageA">Original input</label>
+          <input id="messageA" class="text-input" value="Ethereum">
+          <label class="field-label" for="messageB">Modified input</label>
+          <input id="messageB" class="text-input" value="ethereum">
+          <button class="action-btn full-btn" id="compareBtn">
+            Compare Keccak-256 Hashes
+          </button>
+          <div class="hash-output">
+            <span>HASH A</span><code id="hashA">—</code>
+            <span>HASH B</span><code id="hashB">—</code>
+          </div>
+          <div class="metric">
+            <strong id="hammingValue">—</strong>
+            <span>Different bits out of 256</span>
+          </div>
+          <p class="status-message" id="hashStatus"></p>
+        </div>
+
+        <div class="experiment-card">
+          <h3>Avalanche effect</h3>
+          <p class="small-description">
+            Each trial flips one randomly selected bit of
+            a 32-byte input, then measures the Hamming
+            distance between the two Keccak-256 outputs.
+          </p>
+          <button class="action-btn full-btn" id="avalancheBtn">
+            Run 30 Trials
+          </button>
+          <div class="metric-row">
+            <div class="metric compact">
+              <strong id="avalancheMean">—</strong>
+              <span>Mean distance</span>
+            </div>
+            <div class="metric compact">
+              <strong id="avalancheStd">—</strong>
+              <span>Standard deviation</span>
+            </div>
+          </div>
+          <div id="avalancheChart" class="bar-chart"></div>
+          <p class="chart-caption">
+            Expected mean ≈ 128 changed bits (50%).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="statistics" class="section">
+      <div class="section-heading">
+        <span class="section-number">05 / STATISTICAL EXPLORATION</span>
+        <h2>What does randomness look like?</h2>
+        <p>
+          The output of a secure hash function should behave
+          approximately like uniformly distributed random bits.
+          We can explore this experimentally.
+        </p>
+      </div>
+
+      <div class="statistics-panel">
+        <div class="stats-toolbar">
+          <div>
+            <h3>Keccak-256 output analysis</h3>
+            <p>Sample: 200 random 32-byte inputs</p>
+          </div>
+          <button class="action-btn" id="statsBtn">
+            Generate Sample
+          </button>
+        </div>
+
+        <div class="stat-metrics">
+          <div><span>Total bits</span><strong id="totalBits">—</strong></div>
+          <div><span>Proportion of 1s</span><strong id="onesPercent">—</strong></div>
+          <div><span>Chi-square statistic</span><strong id="chiSquare">—</strong></div>
+        </div>
+
+        <div class="two-charts">
+          <div>
+            <h4>Bit distribution</h4>
+            <div id="bitChart" class="bit-chart"></div>
+            <p class="chart-caption">Expected: approximately 50% each.</p>
+          </div>
+          <div>
+            <h4>Hexadecimal character frequencies</h4>
+            <div id="hexChart" class="hex-chart"></div>
+            <p class="chart-caption">
+              Expected: approximately 6.25% per character.
+            </p>
+          </div>
+        </div>
+
+        <div class="interpretation">
+          <strong>Statistical interpretation</strong>
+          <p id="statsInterpretation">
+            Run the experiment to compare observed frequencies
+            with the expected uniform distribution.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="checksum" class="section">
+      <div class="section-heading">
+        <span class="section-number">06 / ADDRESS CHECKSUM</span>
+        <h2>Can a typo be detected?</h2>
+        <p>
+          EIP-55 introduces mixed-case encoding to help
+          identify accidental errors in Ethereum addresses.
+        </p>
+      </div>
+
+      <div class="checksum-panel">
+        <label class="field-label" for="checksumInput">
+          Ethereum address
+        </label>
+        <input id="checksumInput" class="text-input"
+          value="0x52908400098527886E0F7030069857D2E4169EE7">
+        <div class="button-group">
+          <button class="action-btn" id="validateBtn">Validate Address</button>
+          <button class="secondary-btn" id="typoBtn">Introduce Case Error</button>
+          <button class="secondary-btn" id="restoreBtn">Restore Example</button>
+        </div>
+        <div id="checksumResult" class="checksum-result neutral">
+          Press Validate Address to check the example.
+        </div>
+        <p class="lab-note">
+          EIP-55 does not encrypt an address or prevent every
+          possible error. It provides additional error detection.
+          All-lowercase and all-uppercase addresses are also
+          accepted by many Ethereum tools.
+        </p>
+      </div>
+    </section>
+
+    <section id="history" class="section">
+      <div class="section-heading">
+        <span class="section-number">07 / HISTORICAL CONTEXT</span>
+        <h2>How did we get here?</h2>
+        <p>
+          Modern wallets combine ideas developed across
+          several decades of cryptographic research.
+        </p>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item"><span>1977</span><div><h3>RSA</h3><p>Public-key cryptography based on integer factorization.</p></div></div>
+        <div class="timeline-item"><span>2001</span><div><h3>SHA-2 / SHA-512</h3><p>A new family of standardized cryptographic hash functions.</p></div></div>
+        <div class="timeline-item"><span>2012</span><div><h3>BIP-32</h3><p>Hierarchical deterministic key derivation.</p></div></div>
+        <div class="timeline-item"><span>2013</span><div><h3>BIP-39</h3><p>Mnemonic phrases for deterministic wallets.</p></div></div>
+        <div class="timeline-item"><span>2014</span><div><h3>BIP-44</h3><p>Standardized multi-account derivation paths.</p></div></div>
+        <div class="timeline-item"><span>2015</span><div><h3>SHA-3</h3><p>NIST standard based on the Keccak design.</p></div></div>
+        <div class="timeline-item"><span>2016</span><div><h3>EIP-55</h3><p>Mixed-case checksum encoding for Ethereum addresses.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <span class="section-number">08 / KEY DISTINCTIONS</span>
+        <h2>Different tools, different jobs</h2>
+      </div>
+      <div class="comparison-table-wrap">
+        <table class="comparison-table">
+          <thead><tr><th>Concept</th><th>Purpose</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Key generation</td><td>Create new secret key material</td><td>Secure random private scalar</td></tr>
+            <tr><td>Key derivation</td><td>Derive keys from existing material</td><td>BIP-32 / BIP-44</td></tr>
+            <tr><td>Public-key cryptography</td><td>Public/private key relationship and signatures</td><td>secp256k1</td></tr>
+            <tr><td>Hashing</td><td>Produce a fixed-length digest</td><td>Keccak-256, SHA-512</td></tr>
+            <tr><td>Checksum</td><td>Detect accidental errors</td><td>EIP-55</td></tr>
+            <tr><td>Encoding</td><td>Represent information in another format</td><td>Hexadecimal, mnemonic words</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="hash-difference">
+        <h3>SHA-512, Keccak-256 and SHA3-256</h3>
+        <div class="difference-grid">
+          <div><b>SHA-512</b><p>Part of SHA-2. Produces a 512-bit digest. Used inside HMAC-SHA512 and PBKDF2 in wallet derivation.</p></div>
+          <div><b>Keccak-256</b><p>Produces 256 bits and is used in Ethereum address derivation. It uses the original Keccak padding convention.</p></div>
+          <div><b>SHA3-256</b><p>Standardized by NIST in 2015. Based on Keccak, but uses different domain-separation padding, so the digests differ.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>ETHEREUM WALLET PIPELINE</span>
+      <span>Cryptographic Primitives & Statistical Properties</span>
+    </div>
+  </footer>
+</body>
+</html>
